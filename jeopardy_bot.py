@@ -50,7 +50,7 @@ def play():
 
     while True:
         clue = get_clue(prefer_weak=bool(weak_cats))
-        print(f'\n${clue['clue_value']} {clue['category']} ({clue['air_date']})")
+        print(f'\n${clue['clue_value']} {clue['category']} ({clue['air_date']})")")
         print(f'Clue: {clue['answer']}")
 
         user = input("Your response (as question): ").strip().lower()
