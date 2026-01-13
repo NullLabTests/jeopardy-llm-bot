@@ -1,20 +1,28 @@
 # Jeopardy! Learning Bot
 
-Offline Jeopardy practice using J-Archive clues (~539k entries).
+Offline Jeopardy! practice with full J-Archive dataset (~539k clues).
 
-Features:
-- Auto-downloads and caches TSV
-- Prefers categories you get wrong
+## Features
+- Caches TSV locally after one download
+- Prefers weak categories you miss
 - Basic keyword judging
-- Persists score + weak categories
+- Saves score + weak cats between runs
 
-Quick start:
+## Quick start
 pip install -r requirements.txt
 python jeopardy_bot.py
 
-Upgrade:
-- Add ollama for semantic judging/hints
-- Category selection
-- Voice input
+Type answer as question. 'quit' to save/exit.
 
-Source: https://github.com/jwolle1/jeopardy_clue_dataset
+## Upgrades
+1. LLM judging (Ollama)
+   pip install ollama
+   ollama pull qwen2.5:7b   # or phi3:mini
+   Edit jeopardy_bot.py to use Ollama for judging.
+
+2. Category picker
+3. Hint/explain commands
+
+Data: https://github.com/jwolle1/jeopardy_clue_dataset
+
+Good luck on the test!
