@@ -1,3 +1,4 @@
+import ollama  # pip install ollama; ollama pull qwen2.5:7b
 import pandas as pd
 import random
 import json
