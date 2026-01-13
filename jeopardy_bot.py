@@ -4,17 +4,6 @@ import random
 import json
 import os
 import sys
-def judge_with_llm(user_answer, correct_response, clue_text, category):
-    prompt = f"""You are a strict Jeopardy! judge.
-Clue: "{clue_text}"
-Correct response (phrased as question): "{correct_response}"
-Contestant said: "{user_answer}"
-Category: {category}
-Is this essentially correct? Allow close matches, synonyms, minor errors if core fact right.
-Respond: YES or NO + one short reason."""
-    response = ollama.chat(model="qwen2.5:7b", messages=[{"role": "user", "content": prompt}])
-    ans = response["message"]["content"].strip()
-    return ans.startswith("YES"), ans
 
 TSV_URL = "https://github.com/jwolle1/jeopardy_clue_dataset/raw/main/combined_season1-41.tsv"
 LOCAL_TSV = "combined_season1-41.tsv"
@@ -61,32 +50,23 @@ def play():
 
     while True:
         clue = get_clue(prefer_weak=bool(weak_cats))
-        print(f"\n${clue['clue_value']} {clue['category']} ({clue['air_date']})")
-        print(f"Clue: {clue['answer']}")
+        print(f'\n${clue['clue_value']} {clue['category']} ({clue['air_date']})")
+        print(f'Clue: {clue['answer']}")
 
         user = input("Your response (as question): ").strip().lower()
-        is_correct, reason = judge_with_llm(user, clue["question"], clue["answer"], clue["category"])
-        if is_correct:
-            score += clue["clue_value"]
-            print(f"Correct! +${clue["clue_value"]}")
-            weak_cats.discard(clue["category"])
-        else:
-            score -= clue["clue_value"]
-            print(f"Wrong! -${clue["clue_value"]} | Correct: {clue["question"]}")
-            print(f"Judge says: {reason}")
-            weak_cats.add(clue["category"])
         if user in ['quit', 'q', 'exit']:
             save_progress()
             print(f"\nSaved. Final score: {score}")
             break
 
+        correct = clue['question'].lower() in user or user in clue['question'].lower()
         if correct:
             score += clue['clue_value']
-            print(f"Correct! +${clue['clue_value']}")
+            print(f'Correct! +${clue['clue_value']}")
             weak_cats.discard(clue['category'])
         else:
             score -= clue['clue_value']
-            print(f"Wrong! -${clue['clue_value']} | Correct: {clue['question']}")
+            print(f'Wrong! -${clue['clue_value']} | Correct: {clue['question']}")
             weak_cats.add(clue['category'])
 
         print(f"Score now: {score}")
