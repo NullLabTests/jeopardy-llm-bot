@@ -43,17 +43,6 @@ def get_clue(prefer_weak=False):
             return cands.sample(1).iloc[0].to_dict()
     return df.sample(1).iloc[0].to_dict()
 
-def judge_with_llm(user_answer, correct_response, clue_text, category):
-    prompt = f"""You are a strict Jeopardy! judge.
-Clue: "{clue_text}"
-Correct response (phrased as question): "{correct_response}"
-Contestant said: "{user_answer}"
-Category: {category}
-Is this essentially correct? Allow close matches, synonyms, minor errors if core fact right.
-Respond: YES or NO + one short reason."""
-    response = ollama.chat(model="llama3.2:1b", messages=[{"role": "user", "content": prompt}])
-    ans = response["message"]["content"].strip()
-    return ans.startswith("YES"), ans
 
 def play():
     global score
@@ -90,3 +79,34 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         save_progress()
         print("\nInterrupted. Progress saved.")
+
+def judge_with_llm(user_answer, correct_response, clue_text, category):
+    # Normalize both answers
+    user_norm = user_answer.lower().strip(' ?.!,"').replace("what is", "").replace("who is", "").replace("what are", "").replace("who are", "")
+    correct_norm = correct_response.lower().strip(' ?.!,"').replace("what is", "").replace("who is", "").replace("what are", "").replace("who are", "")
+
+    # Keyword fallback first (fast & reliable)
+    if correct_norm in user_norm or user_norm in correct_norm or any(word in user_norm for word in correct_norm.split()):
+        return True, "YES (keyword match)"
+
+    # LLM only if keyword fails
+    prompt = f"""Fair Jeopardy! judge.
+Clue: "{clue_text}"
+Correct (as question): "{correct_response}"
+User said: "{user_answer}"
+Category: {category}
+
+Accept close facts, synonyms, partial answers, missing "What is", capitalization differences, minor typos.
+Ignore rude/nonsense — just say NO.
+Reply ONLY: YES or NO + one short reason. No lectures."""
+    try:
+        response = ollama.chat(model="llama3.2:1b", messages=[{"role": "user", "content": prompt}])
+        ans = response["message"]["content"].strip()
+        if "YES" in ans[:10].upper():
+            return True, ans
+        elif "NO" in ans[:10].upper():
+            return False, ans
+        else:
+            return False, "NO (invalid judge response)"
+    except Exception as e:
+        return False, f"NO (LLM error: {str(e)} - keyword fallback failed)"
