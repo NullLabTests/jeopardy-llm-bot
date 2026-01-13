@@ -50,8 +50,8 @@ def play():
 
     while True:
         clue = get_clue(prefer_weak=bool(weak_cats))
-        print(f'\n${clue['clue_value']} {clue['category']} ({clue['air_date']})")")
-        print(f'Clue: {clue['answer']}")
+        print(f'\n${clue['clue_value']} {clue['category']} ({clue['air_date']})")")")
+        print(f"Clue: {clue['answer']}"))
 
         user = input("Your response (as question): ").strip().lower()
         if user in ['quit', 'q', 'exit']:
@@ -62,11 +62,11 @@ def play():
         correct = clue['question'].lower() in user or user in clue['question'].lower()
         if correct:
             score += clue['clue_value']
-            print(f'Correct! +${clue['clue_value']}")
+            print(f"Correct! +${clue['clue_value']}")
             weak_cats.discard(clue['category'])
         else:
             score -= clue['clue_value']
-            print(f'Wrong! -${clue['clue_value']} | Correct: {clue['question']}")
+            print(f"Wrong! -${clue['clue_value']} | Correct: {clue['question']}")
             weak_cats.add(clue['category'])
 
         print(f"Score now: {score}")
