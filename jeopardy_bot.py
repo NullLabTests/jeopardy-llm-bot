@@ -51,7 +51,7 @@ Contestant said: "{user_answer}"
 Category: {category}
 Is this essentially correct? Allow close matches, synonyms, minor errors if core fact right.
 Respond: YES or NO + one short reason."""
-    response = ollama.chat(model="qwen2.5:7b", messages=[{"role": "user", "content": prompt}])
+    response = ollama.chat(model="phi3:mini", messages=[{"role": "user", "content": prompt}])
     ans = response["message"]["content"].strip()
     return ans.startswith("YES"), ans
 
