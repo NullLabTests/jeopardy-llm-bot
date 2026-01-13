@@ -66,3 +66,39 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         save_progress()
         print("\nInterrupted. Progress saved.")
+
+def play():
+    global score
+    print(f"\nJeopardy Bot | Score: {score} | Weak cats: {len(weak_cats)}")
+    print("Type 'quit' to exit and save")
+
+    while True:
+        clue = get_clue(prefer_weak=bool(weak_cats))
+        print(f"\n${clue['clue_value']} {clue['category']} ({clue['air_date']})")
+        print(f"Clue: {clue['answer']}")
+
+        user = input("Your response (as question): ").strip().lower()
+        if user in ['quit', 'q', 'exit']:
+            save_progress()
+            print(f"\nSaved. Final score: {score}")
+            break
+
+        is_correct, reason = judge_with_llm(user, clue['question'], clue['answer'], clue['category'])
+        if is_correct:
+            score += clue['clue_value']
+            print(f"Correct! +${clue['clue_value']}")
+            weak_cats.discard(clue['category'])
+        else:
+            score -= clue['clue_value']
+            print(f"Wrong! -${clue['clue_value']} | Correct: {clue['question']}")
+            print(f"Judge says: {reason}")
+            weak_cats.add(clue['category'])
+
+        print(f"Score now: {score}")
+
+if __name__ == "__main__":
+    try:
+        play()
+    except KeyboardInterrupt:
+        save_progress()
+        print("\nInterrupted. Progress saved.")
