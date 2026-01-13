@@ -35,17 +35,6 @@ def save_progress():
     with open(SCORE_FILE, 'w') as f:
         json.dump({'score': score}, f)
 
-def get_clue(prefer_weak=False):
-    if prefer_weak and weak_cats:
-        cat = random.choice(list(weak_cats))
-        cands = df[df['category'].str.contains(cat, case=False, na=False)]
-        if not cands.empty:
-            return cands.sample(1).iloc[0].to_dict()
-    return df.sample(1).iloc[0].to_dict()
-
-def play():
-    global score
-    print(f"\nJeopardy Bot | Score: {score} | Weak cats: {len(weak_cats)}")
     print("Type 'quit' to exit and save")
 
     while True:
