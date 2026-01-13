@@ -67,6 +67,7 @@ if __name__ == "__main__":
         save_progress()
         print("\nInterrupted. Progress saved.")
 
+
 def play():
     global score
     print(f"\nJeopardy Bot | Score: {score} | Weak cats: {len(weak_cats)}")
